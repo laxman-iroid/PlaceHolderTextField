@@ -51,7 +51,7 @@ extension UIView {
         self.layer.cornerRadius = 8
         self.layer.borderWidth = 2
         layer.shadowOffset = CGSize(width: 1.5, height: 1.5) //Defaults to (0, -3) // An offset of (2,2) will put the shadow 2 pixels to the right and 2 pixels down with respect to the element. These can also be negative values if you want the shadow to be to the top or left of the element.
-        self.layer.borderColor = Utility.getUIcolorfromHex(hex: "47B9E2").cgColor
+        self.layer.borderColor = UIColor(red: 0.278, green: 0.725, blue: 0.886, alpha: 1.0).cgColor
     }
     
     
@@ -97,13 +97,13 @@ extension UIImage {
         return String(format: "%.2f", size)
     }
 }
-class NibView: UIView {
-    override public init(frame: CGRect) {
+public class NibView: UIView {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         loadContentViewFromNib()
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         loadContentViewFromNib()
     }
@@ -157,8 +157,8 @@ extension UIView{
         let animation = CABasicAnimation(keyPath: "position.y")
         self.isHidden = false
         // Set the animation's properties
-        animation.fromValue = screenHeight
-        animation.toValue = screenHeight - (self.bounds.height + 15)
+        animation.fromValue = UIScreen.main.bounds.height
+        animation.toValue = UIScreen.main.bounds.height - (self.bounds.height + 15)
         animation.duration = 0.3
         animation.fillMode = .forwards
         animation.isRemovedOnCompletion = false
@@ -170,8 +170,8 @@ extension UIView{
         CATransaction.begin()
         let animation = CABasicAnimation(keyPath: "position.y")
         // Set the animation's properties
-        animation.fromValue = screenHeight - self.bounds.height
-        animation.toValue = screenHeight + self.bounds.height
+        animation.fromValue = UIScreen.main.bounds.height - self.bounds.height
+        animation.toValue = UIScreen.main.bounds.height + self.bounds.height
         animation.duration = 0.3
         animation.fillMode = .forwards
         animation.isRemovedOnCompletion = false
@@ -188,7 +188,7 @@ extension UIView{
         self.isHidden = false
         // Set the animation's properties
         animation.fromValue = -200
-        animation.toValue = topSafeArea
+        animation.toValue = UIApplication.shared.windows.first?.safeAreaInsets.top ?? 44
         animation.duration = 0.8
         animation.fillMode = .forwards
         animation.isRemovedOnCompletion = false

@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class TextFieldView: NibView{
+public class TextFieldView: NibView{
     
     
 //    @IBOutlet weak var requiredView: UIView!
@@ -17,19 +17,19 @@ class TextFieldView: NibView{
 //            
 //    @IBOutlet weak var countryCodeLabel: UILabel!
     
-    @IBOutlet weak var mainView: dateSportView!
-    @IBOutlet weak var textField: dateSportTextField!
+    @IBOutlet weak var mainView: UIView!
+    @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var placeHolderLabel: UILabel!
     @IBOutlet weak var rightButton: UIButton!
     
-    var onVisible: (() -> Void)?
-    var selectCountryCode: (() -> Void)?
+    public var onVisible: (() -> Void)?
+    public var selectCountryCode: (() -> Void)?
     
     @IBInspectable var textFieldFontSize: CGFloat{
         get{
-            return self.textField.fontSize
+            return self.textField.font?.pointSize ?? 14.0
         }set{
-            self.textField.fontSize = newValue
+            self.textField.font = UIFont.systemFont(ofSize: newValue)
         }
     }
     
@@ -43,9 +43,9 @@ class TextFieldView: NibView{
     
     @IBInspectable var placeHolderColor: UIColor?{
         get{
-            return self.textField.placeHolderColor
+            return self.placeHolderLabel.textColor
         }set{
-            self.textField.placeHolderColor = newValue
+            self.placeHolderLabel.textColor = newValue
         }
     }
     
@@ -173,21 +173,23 @@ class TextFieldView: NibView{
         }
     }
     
-    override func awakeFromNib() {
+    public override func awakeFromNib() {
         super.awakeFromNib()
-        self.textField.addTarget(self, action: #selector(textFieldDidBeginEditing), for: .editingDidBegin)
-        self.textField.addTarget(self, action: #selector(textFieldDidEndEditing), for: .editingDidEnd)
+        Task { @MainActor in
+            self.textField.addTarget(self, action: #selector(textFieldDidBeginEditing), for: .editingDidBegin)
+            self.textField.addTarget(self, action: #selector(textFieldDidEndEditing), for: .editingDidEnd)
+        }
     }
     
-    func beginEditing(){
+    public func beginEditing(){
         self.textField.becomeFirstResponder()
     }
     
-    func endEditing(){
+    public func endEditing(){
         self.textField.resignFirstResponder()
     }
     
-    func isEmpty() -> Bool{
+    public func isEmpty() -> Bool{
         return self.text?.count == 0
     }
     
@@ -199,24 +201,24 @@ class TextFieldView: NibView{
 //        self.selectCountryCode?()
 //    }
     
-    @objc func textFieldDidBeginEditing() {
+    @MainActor @objc func textFieldDidBeginEditing() {
         UIView.animate(withDuration: 0.25) {
             self.placeHolderLabel.transform = CGAffineTransform(translationX: 0, y: -16)
             self.textField.transform = CGAffineTransform(translationX: 0, y: 4)
             self.placeHolderLabel.font = UIFont(name: "Mulish-Regular", size: 10) // Optional: make font smaller
-            self.placeHolderLabel.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-            self.mainView.borderWidth = 1
+            self.placeHolderLabel.textColor = UIColor.white
+            self.mainView.layer.borderWidth = 1
         }
     }
 
-    @objc func textFieldDidEndEditing() {
+    @MainActor @objc func textFieldDidEndEditing() {
         if let text = self.textField.text, text.isEmpty {
             UIView.animate(withDuration: 0.25) {
                 self.placeHolderLabel.transform = .identity
                 self.textField.transform = .identity
                 self.placeHolderLabel.font = UIFont(name: "Mulish-Regular", size: 14) // Optional: reset font size
-                self.placeHolderLabel.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.5)
-                self.mainView.borderWidth = 0
+                self.placeHolderLabel.textColor = UIColor.white.withAlphaComponent(0.5)
+                self.mainView.layer.borderWidth = 0
             }
         }
     }
